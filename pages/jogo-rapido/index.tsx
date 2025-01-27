@@ -1,5 +1,6 @@
 import Button from "@/component/@core/button";
 import {
+  APIURLSOCKET,
   distPerPulse,
   distanciaPadrao,
   totalDist,
@@ -7,6 +8,16 @@ import {
 import Progress from "@/component/progress";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
+import { io } from "socket.io-client";
+
+interface WSData {
+  bikes: { 0: BikeData; 1: BikeData };
+  order: number;
+}
+interface BikeData {
+  speed: number;
+  progress: number;
+}
 
 const renderTimer = (timer: number) => {
   const sec = Math.floor(timer / 1000);
@@ -24,17 +35,16 @@ const renderTimer = (timer: number) => {
 
 export default function JogoRapido() {
   const [progress1, setProgress1] = useState(0);
+  const [speed1, setSpeed1] = useState(0);
   const [progress2, setProgress2] = useState(0);
+  const [speed2, setSpeed2] = useState(0);
   const [name1, setName1] = useState("");
   const [name2, setName2] = useState("");
   const [start, setStart] = useState(false);
   const [timer, setTimer] = useState(0);
-  const [dt1, setDt1] = useState(0);
-  const [dt2, setDt2] = useState(0);
 
   const timerIterator: any = useRef();
-  const sensor1: any = useRef(0);
-  const sensor2: any = useRef(0);
+  const order: any = useRef(0);
 
   const startTimer = () => {
     timerIterator.current = setInterval(myTimer, 50);
@@ -54,52 +64,51 @@ export default function JogoRapido() {
     setName2("");
     setProgress1(0);
     setProgress2(0);
-    setDt1(0);
-    setDt2(0);
+    order.current = 0;
   };
 
   const pause = () => {
     clearInterval(timerIterator.current);
-    clearInterval(sensor1.current);
-    clearInterval(sensor2.current);
   };
 
   useEffect(() => {
-    if (progress1 >= totalDist || progress2 >= totalDist) {
+    if (start) {
+      const socket = io(APIURLSOCKET, {
+        transports: ["websocket", "polling"],
+      });
+
+      socket.on("data", (data: WSData) => {
+        if (order.current < data.order) {
+          setSpeed1(data.bikes[0].speed);
+          setProgress1(data.bikes[0].progress);
+          setSpeed2(data.bikes[1].speed);
+          setProgress2(data.bikes[1].progress);
+
+          order.current = data.order;
+        }
+      });
+
+      return () => {
+        socket.off("data", (data) => {
+          console.log(data);
+        });
+        socket.close();
+      };
+    }
+  }, [start]);
+
+  useEffect(() => {
+    if (progress1 >= 1 || progress2 >= 1) {
       pause();
     }
   }, [progress1, progress2]);
-
-  useEffect(() => {
-    dt1 ? setProgress1((old) => old + distanciaPadrao) : setProgress1(0);
-  }, [dt1]);
-
-  useEffect(() => {
-    dt2 ? setProgress2((old) => old + distanciaPadrao) : setProgress2(0);
-  }, [dt2]);
-
-  useEffect(() => {
-    if (start) {
-      sensor1.current = setInterval(
-        () => setDt1(Math.random() * (0.8 - 0.3) + 0.3),
-        49
-      );
-      sensor2.current = setInterval(
-        () => setDt2(Math.random() * (0.8 - 0.3) + 0.3),
-        53
-      );
-    } else {
-      sensor1.current = 0;
-      sensor2.current = 0;
-    }
-  }, [start]);
 
   return (
     <main className="jogo-rapido-main-wrapper">
       <div className="progress-data-wrapper">
         <div className="progress-bars-wrapper">
-          <Progress progress={progress1} dt={dt1} />
-          <Progress progress={progress2} dt={dt2} />
+          <Progress progress={progress1} speed={speed1} />
+          <Progress progress={progress2} speed={speed2} />
         </div>
         <div className="progress-timer-wrapper">
           <input

@@ -3,22 +3,16 @@ import { distanciaPadrao, totalDist } from "./@variables/constants";
 
 export default function Progress({
   progress,
-  dt,
+  speed,
 }: {
   progress: number;
-  dt: number;
+  speed: number;
 }) {
-  const [vel, setVel] = useState(0);
-
-  const height = (progress * 100) / totalDist;
-
-  useEffect(() => {
-    dt ? setVel(distanciaPadrao / dt) : setVel(0);
-  }, [dt]);
+  const height = progress * 100;
 
   return (
     <div className="player-progress-bar">
-      <h3>{vel.toFixed(1)} km/h</h3>
+      <h3>{speed.toFixed(1)} km/h</h3>
       <div
         className={progress >= totalDist ? "victory" : ""}
         style={{ height: height + "%" }}

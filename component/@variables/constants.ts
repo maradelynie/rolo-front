@@ -5,3 +5,4 @@ export const relacao = 2.3;
 export const pulsosPorRevolucao = 1;
 export const distanciaPadrao =
   Math.PI * relacao * diametroRoda * pulsosPorRevolucao * 3.6;
+export const APIURLSOCKET = "http://localhost:8080/ws";
