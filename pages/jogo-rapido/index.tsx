@@ -34,6 +34,7 @@ const renderTimer = (timer: number) => {
 };
 
 export default function JogoRapido() {
+  const [socket, setSocket] = useState<any>();
   const [progress1, setProgress1] = useState(0);
   const [speed1, setSpeed1] = useState(0);
   const [progress2, setProgress2] = useState(0);
@@ -44,7 +45,7 @@ export default function JogoRapido() {
   const [timer, setTimer] = useState(0);
 
   const timerIterator: any = useRef();
-  const order: any = useRef(0);
+  const lastOrder: any = useRef(0);
 
   const startTimer = () => {
     timerIterator.current = setInterval(myTimer, 50);
@@ -64,7 +65,7 @@ export default function JogoRapido() {
     setName2("");
     setProgress1(0);
     setProgress2(0);
-    order.current = 0;
+    lastOrder.current = 0;
   };
 
   const pause = () => {
@@ -72,29 +73,39 @@ export default function JogoRapido() {
   };
 
   useEffect(() => {
-    if (start) {
-      const socket = io(APIURLSOCKET, {
-        transports: ["websocket", "polling"],
-      });
+    const socket = new WebSocket(APIURLSOCKET);
 
-      socket.on("data", (data: WSData) => {
-        if (order.current < data.order) {
-          setSpeed1(data.bikes[0].speed);
-          setProgress1(data.bikes[0].progress);
-          setSpeed2(data.bikes[1].speed);
-          setProgress2(data.bikes[1].progress);
+    socket.onopen = (a) => {
+      console.log("open");
+      console.log(a);
+    };
 
-          order.current = data.order;
-        }
-      });
+    socket.onerror = (a) => {
+      console.error(a);
+    };
 
-      return () => {
-        socket.off("data", (data) => {
-          console.log(data);
-        });
-        socket.close();
-      };
-    }
+    socket.onmessage = (e) => {
+      const { bikes, order } = JSON.parse(e.data);
+      if (+order > lastOrder.current) {
+        setProgress1(+bikes[0].progress);
+        setSpeed1(+bikes[0].speed);
+        setProgress2(+bikes[1].progress);
+        setSpeed2(+bikes[1].speed);
+
+        lastOrder.current = +order;
+      }
+    };
+
+    socket.onclose = (e) => {
+      console.log("close");
+      console.log(e);
+    };
+
+    setSocket(socket);
+
+    return () => {
+      socket.close();
+    };
   }, [start]);
 
   useEffect(() => {
@@ -102,6 +113,11 @@ export default function JogoRapido() {
       pause();
     }
   }, [progress1, progress2]);
+
+  useEffect(() => {
+    console.log("socket");
+    console.log(socket);
+  }, [socket]);
 
   return (
     <main className="jogo-rapido-main-wrapper">
