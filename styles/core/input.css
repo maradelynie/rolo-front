@@ -1,0 +1,12 @@
+input {
+  background-color: var(--bright-color);
+  color: var(--dark-color);
+  padding: 0.5rem 2rem;
+  border: none;
+  width: 100%;
+}
+
+input:disabled {
+  background-color: var(--background-color);
+  color: var(--bright-color);
+}

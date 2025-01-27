@@ -1,0 +1,15 @@
+.torneios-main-wrapper .torneios-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+.torneios-main-wrapper .torneios-grid button {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.torneios-main-wrapper .torneios-grid div {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}

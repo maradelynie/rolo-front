@@ -1,0 +1,25 @@
+:root {
+  --dark-color: #191716;
+  --bright-color: #fffaff;
+  --sucess-color: #3e92cc;
+  --error-color: #ba2d0b;
+  --attention-color: #e6af2e;
+  --background-color: #1c314a;
+  --paper-color: #1917168d;
+}
+
+body {
+  height: 100vh;
+  width: 100vw;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-color: var(--background-color);
+  color: var(--bright-color);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+ul {
+  padding-inline-start: 0;
+}

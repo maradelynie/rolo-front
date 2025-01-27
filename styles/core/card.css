@@ -1,0 +1,18 @@
+div.card-core {
+  background-color: var(--paper-color);
+  border-radius: 0.3rem;
+  border: 1px solid var(--sucess-color);
+  padding: 1.3rem;
+}
+
+div.card-core + div.card-core {
+  margin-top: 1rem;
+}
+
+div.card-core *:first-child {
+  margin-top: 0;
+}
+
+div.card-core *:last-child {
+  margin-bottom: 0;
+}

@@ -1,0 +1,29 @@
+.player-progress-bar {
+  width: 20rem;
+  min-height: 50vh;
+  display: flex;
+  align-items: flex-end;
+  position: relative;
+}
+
+.player-progress-bar div {
+  border-top: 3px var(--error-color) solid;
+  background-color: var(--dark-color);
+  opacity: 0.7;
+  width: 100%;
+  transition: 0.2s;
+}
+
+.player-progress-bar .victory {
+  border-top: 3px var(--error-color) solid;
+  background-color: var(--sucess-color);
+  opacity: 1;
+}
+
+.player-progress-bar h3 {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  text-align: center;
+  font-size: 5rem;
+}
