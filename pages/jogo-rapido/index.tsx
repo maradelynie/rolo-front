@@ -1,14 +1,9 @@
 import Button from "@/component/@core/button";
-import {
-  APIURLSOCKET,
-  distPerPulse,
-  distanciaPadrao,
-  totalDist,
-} from "@/component/@variables/constants";
+import { APIURLSOCKET } from "@/component/@variables/constants";
 import Progress from "@/component/progress";
+import { apiSocket } from "@/services/api";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
-import { io } from "socket.io-client";
 
 interface WSData {
   bikes: { 0: BikeData; 1: BikeData };
@@ -106,13 +101,21 @@ export default function JogoRapido() {
     return () => {
       socket.close();
     };
-  }, [start]);
+  }, []);
 
   useEffect(() => {
     if (progress1 >= 1 || progress2 >= 1) {
       pause();
     }
   }, [progress1, progress2]);
+
+  useEffect(() => {
+    if (start) {
+      apiSocket.get("/start");
+    } else {
+      apiSocket.get("/stop");
+    }
+  }, [start]);
 
   useEffect(() => {
     console.log("socket");
