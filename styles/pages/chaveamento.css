@@ -1,0 +1,43 @@
+.chaveamento-main-wrapper .chaveamento-section {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: 2rem 0;
+  overflow: auto;
+}
+
+.chaveamento-main-wrapper .chaveamento-round-match {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.chaveamento-main-wrapper .chaveamento-round-section {
+  display: flex;
+  gap: 1rem;
+}
+
+.chaveamento-main-wrapper p.chaveamento-round {
+  padding: 0 1rem;
+  margin: 0;
+  border-right: 2px solid var(--attention-color);
+}
+
+.chaveamento-main-wrapper .chaveamento-match {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.chaveamento-main-wrapper .chaveamento-match p {
+  margin: auto 0;
+}
+
+.chaveamento-main-wrapper .chaveamento-match div {
+  padding-left: 1rem;
+  border-left: 2px solid var(--attention-color);
+}
+
+.chaveamento-main-wrapper .chaveamento-round-section.inactive {
+  opacity: 0.5;
+  pointer-events: none;
+}

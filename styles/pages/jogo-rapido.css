@@ -17,7 +17,8 @@
 .jogo-rapido-main-wrapper .progress-timer-wrapper {
   width: 100%;
   display: flex;
-  justify-content: space-around;
+  justify-content: center;
+  gap: 3rem;
   align-items: center;
 }
 .jogo-rapido-main-wrapper .progress-timer-wrapper input {

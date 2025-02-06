@@ -22,6 +22,8 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
         players: [],
         active: true,
         deleted: false,
+        round: 0,
+        finished: false,
       },
     ];
 
@@ -48,6 +50,36 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     const newData = [...jsonData.tournaments].map((tournament) => {
       if (+tournament.id === +req.body.id) {
         return { ...tournament, deleted: true };
+      }
+      return tournament;
+    });
+    const content = JSON.stringify({
+      ...jsonData,
+      tournaments: newData,
+    });
+
+    fs.writeFile(process.cwd() + "/data/tounamentsData.json", content);
+
+    return res
+      .status(200)
+      .json(newData.filter((tournament) => !tournament.deleted));
+  } else if (req.method === "PUT") {
+    const fileInfo = await fs.readFile(
+      process.cwd() + "/data/tounamentsData.json",
+      {
+        encoding: "utf8",
+      }
+    );
+
+    const jsonData = await JSON.parse(fileInfo);
+
+    const newData = [...jsonData.tournaments].map((tournament) => {
+      if (+tournament.id === +req.body.tournamentId) {
+        return {
+          ...tournament,
+          rounds: req.body.round,
+          round: 1,
+        };
       }
       return tournament;
     });

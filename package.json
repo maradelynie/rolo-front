@@ -1,5 +1,5 @@
 {
-  "name": "liga-poabp",
+  "name": "rolo-poabp",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -9,12 +9,11 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@radix-ui/themes": "^2.0.0",
     "axios": "^1.7.9",
     "next": "14.0.1",
     "react": "^18",
     "react-dom": "^18",
-    "socket.io-client": "^4.8.1"
+    "tournament-pairings": "^1.6.0"
   },
   "devDependencies": {
     "@types/node": "^20",

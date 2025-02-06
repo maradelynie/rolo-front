@@ -7,6 +7,7 @@ import TRASH from "../../styles/icons/trash.svg";
 import Image from "next/image";
 import { TournamentInfoInterface, TournamentsType } from "../api/interfaces";
 import { useRouter } from "next/router";
+import { SingleElimination } from "tournament-pairings";
 
 export default function TorneiosDetail({
   tournament,
@@ -15,19 +16,36 @@ export default function TorneiosDetail({
   const router = useRouter();
 
   const handleAddPlayer = async () => {
-    await api.post("/players", {
-      data: { tournamentId: tournament.id, name },
-    });
+    tournament.rounds
+      ? null
+      : await api.post("/players", {
+          data: { tournamentId: tournament.id, name },
+        });
     setName("");
   };
 
   const handleDeletePlayer = async (id: number) => {
-    await api.delete("/players", { data: { tournamentId: tournament.id, id } });
+    tournament.rounds
+      ? null
+      : await api.delete("/players", {
+          data: { tournamentId: tournament.id, id },
+        });
   };
 
   const handleDelete = async (id: number) => {
-    await api.delete("/tournaments", { data: { id } });
+    tournament.rounds
+      ? null
+      : await api.delete("/tournaments", { data: { id } });
     router.back();
+  };
+
+  const handleInit = async () => {
+    const players = tournament.players.map((player) => player.id.toString());
+    const round = SingleElimination(players, 1, true);
+    tournament.rounds
+      ? null
+      : await api.put("/tournaments", { round, tournamentId: tournament.id });
+    setName("");
   };
 
   return (
@@ -39,12 +57,14 @@ export default function TorneiosDetail({
             autoFocus
             type="text"
             value={name}
+            disabled={!!tournament.rounds}
             onChange={(e) => setName(e.target.value)}
           />
           <Button
             type="submit"
             onClick={(e) => (e.preventDefault(), handleAddPlayer())}
             color="primary"
+            disabled={!!tournament.rounds}
           >
             +
           </Button>
@@ -52,7 +72,7 @@ export default function TorneiosDetail({
       </Card>
       <Card>
         <h4>Pessoas jogadoras ({tournament.players.length})</h4>
-        <ul>
+        <ul className={tournament.rounds ? "players-disabled" : undefined}>
           {tournament.players.map((player) => {
             return (
               <li
@@ -68,10 +88,20 @@ export default function TorneiosDetail({
 
       <section className="detalhe-action-secction">
         <Button onClick={() => router.back()}>Voltar</Button>
-        <Button color="primary" onClick={() => router.back()}>
-          Iniciar
-        </Button>
+        {tournament.rounds ? (
+          <Button
+            color="primary"
+            onClick={() => router.push("/chaveamento/" + tournament.id)}
+          >
+            Ver chaveamento
+          </Button>
+        ) : (
+          <Button color="primary" onClick={handleInit}>
+            Iniciar
+          </Button>
+        )}
         <Button
+          disabled={!!tournament.rounds}
           onClick={() => handleDelete(tournament.id)}
           key={tournament.date}
           color="warning"

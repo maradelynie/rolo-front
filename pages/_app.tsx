@@ -9,6 +9,7 @@ import "../styles/pages/home.css";
 import "../styles/pages/jogo-rapido.css";
 import "../styles/pages/torneios.css";
 import "../styles/pages/detalhe.css";
+import "../styles/pages/chaveamento.css";
 
 export default function App({ Component, pageProps }: AppProps) {
   return <Component {...pageProps} />;

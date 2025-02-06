@@ -13,3 +13,6 @@
 .detalhe-main-wrapper .detalhe-delete-link:hover {
   color: var(--error-color);
 }
+.detalhe-main-wrapper .players-disabled {
+  pointer-events: none;
+}

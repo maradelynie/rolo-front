@@ -1,8 +1,9 @@
 import Button from "@/component/@core/button";
 import { APIURLSOCKET } from "@/component/@variables/constants";
 import Progress from "@/component/progress";
-import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { TournamentInfoInterface, TournamentsType } from "../api/interfaces";
+import { useRouter } from "next/router";
 
 interface WSData {
   bikes: { 0: BikeData; 1: BikeData };
@@ -27,16 +28,35 @@ const renderTimer = (timer: number) => {
   );
 };
 
-export default function JogoRapido() {
+export default function JogoRapido({
+  tournament,
+  match,
+}: TournamentInfoInterface) {
   const [socket, setSocket] = useState<any>();
   const [progress1, setProgress1] = useState(0);
   const [speed1, setSpeed1] = useState(0);
   const [progress2, setProgress2] = useState(0);
   const [speed2, setSpeed2] = useState(0);
-  const [name1, setName1] = useState("");
-  const [name2, setName2] = useState("");
+
+  const getPlayer = (id: number) => {
+    return (
+      tournament.players.find((player) => player.id === +(id || ""))?.name || ""
+    );
+  };
+
+  const name1 = useMemo(
+    () => getPlayer(+(match.player1 || "")),
+    [tournament, match]
+  );
+
+  const name2 = useMemo(
+    () => getPlayer(+(match.player2 || "")),
+    [tournament, match]
+  );
+
   const [start, setStart] = useState(false);
   const [timer, setTimer] = useState(0);
+  const router = useRouter();
 
   const timerIterator: any = useRef();
   const lastOrder: any = useRef(0);
@@ -55,8 +75,6 @@ export default function JogoRapido() {
 
     setTimer(0);
     setStart(false);
-    setName1("");
-    setName2("");
     setProgress1(0);
     setProgress2(0);
     lastOrder.current = 0;
@@ -121,19 +139,9 @@ export default function JogoRapido() {
           <Progress progress={progress2} speed={speed2} />
         </div>
         <div className="progress-timer-wrapper">
-          <input
-            type="text"
-            disabled={timer > 0}
-            onChange={(e) => setName1(e.target.value)}
-            value={name1}
-          />
+          <input type="text" disabled={true} value={name1} />
           {renderTimer(timer)}
-          <input
-            type="text"
-            disabled={timer > 0}
-            onChange={(e) => setName2(e.target.value)}
-            value={name2}
-          />
+          <input type="text" disabled={true} value={name2} />
         </div>
         <Button disabled={start || !(name1 && name2)} onClick={startTimer}>
           iniciar
@@ -141,10 +149,37 @@ export default function JogoRapido() {
         <Button onClick={reset} color="warning">
           zerar
         </Button>
-        <Link href="/">
-          <Button>voltar</Button>
-        </Link>
+        <Button onClick={() => router.back()}>voltar</Button>
       </div>
     </main>
   );
+}
+export async function getServerSideProps({
+  query,
+}: {
+  query: { tournamentId: string; roundId: string; matchId: string };
+}) {
+  const fs = require("fs");
+  const fileInfo = fs.readFileSync(
+    require.resolve("../../data/tounamentsData.json"),
+    {
+      encoding: "utf8",
+    }
+  );
+  const jsonData = JSON.parse(fileInfo);
+
+  console.log(query);
+  const tournament: TournamentsType = jsonData.tournaments.find(
+    (tournament: TournamentsType) => tournament.id === +query.tournamentId
+  );
+  const match = tournament?.rounds?.find(
+    (match) => match.round === +query.roundId && match.match === +query.matchId
+  );
+
+  return {
+    props: {
+      tournament,
+      match,
+    },
+  };
 }

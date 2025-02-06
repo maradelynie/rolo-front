@@ -18,10 +18,7 @@ export default function Torneios({ tournaments }: FileInfoInterface) {
     setTournamentsList(response.data);
     setName("");
   };
-  const handleDelete = async (id: number) => {
-    const response = await api.delete("/tournaments", { data: { id } });
-    setTournamentsList(response.data);
-  };
+
   return (
     <main className="torneios-main-wrapper">
       <Card>
@@ -46,6 +43,7 @@ export default function Torneios({ tournaments }: FileInfoInterface) {
               <Button
                 onClick={() => router.push("/torneios/" + tournament.id)}
                 key={tournament.date}
+                color={tournament.rounds ? "primary" : undefined}
               >
                 <div>{tournament.name} </div>{" "}
                 <div>

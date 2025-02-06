@@ -49,3 +49,7 @@ form button {
 form {
   display: flex;
 }
+
+a:has(button) {
+  text-decoration: none;
+}

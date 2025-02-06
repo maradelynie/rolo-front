@@ -1,6 +1,7 @@
 .torneios-main-wrapper .torneios-grid {
   display: flex;
   flex-direction: column;
+  justify-content: center;
   gap: 1rem;
 }
 .torneios-main-wrapper .torneios-grid button {
